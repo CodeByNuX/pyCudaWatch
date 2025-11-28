@@ -3,7 +3,7 @@ import os
 import sqlite3
 import pynvml
 
-doDEBUG = True
+doDEBUG = False
 
 def collect():
     if doDEBUG: print("=== Collector starting ===")
@@ -45,6 +45,16 @@ def collect():
             INSERT INTO metrics (ts, gpu_util, mem_used, mem_total, temp)
             VALUES (?, ?, ?, ?, ?)
         """, (ts, util.gpu, mem.used, mem.total, temp))
+
+        # Hourly cleanup
+        now = datetime.datetime.now()
+
+        if now.minute == 0:
+            cur.execute(""" 
+                        DELETE FROM metrics WHERE ts < datetime('now', '-30 days')
+                        """)
+            cur.execute("VACUUM;")
+            if doDEBUG: print("[CLEANUP] Purged + vacuumed.")    
 
         # Commit and close DB connection
         conn.commit()
