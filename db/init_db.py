@@ -4,7 +4,7 @@ import sqlite3
 
 # ---
 # Locate the directory where this script resides.
-# Ensuring the database is created next to the script,# 
+# Ensuring the database is created next to the script,
 # ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "gpu_stats.db")
@@ -19,7 +19,7 @@ cur = conn.cursor()
 # Create 'metrics' table if it does not exist.
 #
 # id          - Auto-increment primary key
-# datetime    - Timestamp
+# ts          - Timestamp
 # gpu_util    - GPU utilization percentage
 # mem_used    - GPU memory used (MiB)
 # mem_total   - Total GPU memory (MiB)
@@ -28,7 +28,7 @@ cur = conn.cursor()
 cur.execute("""
 CREATE TABLE IF NOT EXISTS metrics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    datetime TEXT NOT NULL,
+    ts TEXT NOT NULL,
     gpu_util INTEGER,
     mem_used INTEGER,
     mem_total INTEGER,
