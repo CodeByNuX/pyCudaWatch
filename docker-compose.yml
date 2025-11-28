@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  pycudawatch:
+    build: .
+    container_name: pycudawatch
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./db:/app/db                # persistent SQLite DB
+      - ./collector:/app/collector  # optional: live editing
+      - ./dashboard:/app/dashboard  # optional: live editing
+    restart: unless-stopped
