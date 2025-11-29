@@ -49,16 +49,25 @@ def collect():
         # Hourly cleanup
         now = datetime.datetime.now()
 
+        doVacuum = False
         if now.minute == 0:
             cur.execute(""" 
                         DELETE FROM metrics WHERE ts < datetime('now', '-30 days')
                         """)
-            cur.execute("VACUUM;")
-            if doDEBUG: print("[CLEANUP] Purged + vacuumed.")    
+            doVacuum = True
 
         # Commit and close DB connection
         conn.commit()
         conn.close()
+
+        if doVacuum:
+            vacuumConn = sqlite3.connect(DB_PATH)
+            vacuumCur = vacuumConn.cursor()
+            vacuumCur.execute("VACUUM;")
+            vacuumConn.commit()
+            vacuumConn.close()
+            if doDEBUG: print("[CLEANUP] Purged & Vacuumed.")
+
 
         print(f"[OK] Logged at {ts}")
 
